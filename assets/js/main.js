@@ -1464,13 +1464,29 @@ curl -X POST https://api.omnisync.dev/v1/ingest \\
   };
 
   if (dispatchTestBtn) {
-    dispatchTestBtn.addEventListener('click', () => {
+    dispatchTestBtn.addEventListener('click', async () => {
       dispatchTestBtn.disabled = true;
       dispatchTestBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...`;
 
-      const latencyMs = (1.8 + Math.random() * 1.5).toFixed(1);
-      const trace = 'omni-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 6);
-      const queueId = 'q_' + Math.random().toString(36).substring(2, 6);
+      const t0 = performance.now();
+      let resData = null;
+      try {
+        const response = await fetch('/api/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ preset: webhookPresetSelect ? webhookPresetSelect.value : 'stripe' })
+        });
+        if (response.ok) {
+          resData = await response.json();
+        }
+      } catch (err) {
+        // Fallback gracefully for static preview environments
+      }
+
+      const t1 = performance.now();
+      const latencyMs = (resData && resData.latencyMs) ? resData.latencyMs : Math.max(1.4, (t1 - t0) + 1.2).toFixed(1);
+      const trace = (resData && resData.traceId) ? resData.traceId : '#omni-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 6);
+      const queueId = (resData && resData.queueId) ? resData.queueId : '#q_' + Math.random().toString(36).substring(2, 6);
 
       setTimeout(() => {
         dispatchTestBtn.disabled = false;
@@ -1483,7 +1499,7 @@ curl -X POST https://api.omnisync.dev/v1/ingest \\
           testLatencyAck.textContent = `${latencyMs} ms`;
         }
         if (testTraceId) {
-          testTraceId.textContent = `Trace ID: #${trace} • Redis Queue ID: #${queueId}`;
+          testTraceId.textContent = `Trace ID: ${trace} • Redis Queue ID: ${queueId}`;
         }
 
         // Spawn a burst packet on canvas
@@ -1507,13 +1523,13 @@ curl -X POST https://api.omnisync.dev/v1/ingest \\
         if (coreConsole) {
           const div = document.createElement('div');
           div.className = 'text-cyan-400 font-bold';
-          div.textContent = `> [${new Date().toLocaleTimeString()}] INGRESS: Received synthetic webhook for ${preset.name} (ACK: ${latencyMs}ms, trace: #${trace})`;
+          div.textContent = `> [${new Date().toLocaleTimeString()}] INGRESS: Received synthetic webhook for ${preset.name} (ACK: ${latencyMs}ms, trace: ${trace})`;
           coreConsole.appendChild(div);
           coreConsole.scrollTop = coreConsole.scrollHeight;
         }
 
         showToast(`HTTP 200 OK: Ingested synthetic webhook in ${latencyMs}ms.`);
-      }, 500);
+      }, 350);
     });
   }
 

@@ -2,6 +2,8 @@
 
 A high-performance, developer-first web application showcasing **OmniSync**, engineered for **Muhammad Aurangzeb's** flagship engineering portfolio.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aurangzeb200004/OmnySync)
+
 ---
 
 ## 🚀 Key Modules & Architecture
@@ -40,21 +42,47 @@ A high-performance, developer-first web application showcasing **OmniSync**, eng
 
 ---
 
-## 💻 How to Run
+## ⚡ Deployment to Vercel (Zero Configuration)
 
-### Development Server (Recommended)
-Run using Python's built-in web server:
+This repository is pre-configured with `vercel.json`, optimized caching headers, and edge serverless API endpoints for 1-click deployment on [Vercel](https://vercel.com):
+
+### Method A: One-Click Deploy Button
+Click the button below to deploy your own instance to Vercel automatically:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aurangzeb200004/OmnySync)
+
+### Method B: Vercel Web Dashboard
+1. Go to [vercel.com/new](https://vercel.com/new).
+2. Connect your GitHub account and select **`aurangzeb200004/OmnySync`**.
+3. Leave all default settings (*Framework Preset: Other*, *Root Directory: ./*).
+4. Click **Deploy**. Vercel will complete deployment in under 15 seconds.
+
+### Method C: Vercel CLI
+```bash
+npx vercel
+```
+Follow the interactive prompts (accept defaults by pressing Enter).
+
+---
+
+## 🛠 Edge Serverless Endpoints Included
+When deployed on Vercel, the following serverless routes are automatically active:
+- **`GET /api/health`**: Returns cluster health, active worker count, uptime, and engine status.
+- **`POST /api/webhook`**: Ingestion endpoint accepting synthetic payloads and returning delivery acknowledgments with trace IDs.
+
+---
+
+## 💻 Local Development
+
+Run using Node.js:
+```bash
+npm start
+```
+Or using Python's built-in web server:
 ```bash
 python -m http.server 3000
 ```
-Or using Node.js:
-```bash
-npx serve -l 3000
-```
-Navigate to:
-```
-http://localhost:3000
-```
+Navigate to: `http://localhost:3000`
 
 ---
 
@@ -62,10 +90,17 @@ http://localhost:3000
 ```
 omnisync-engine/
 ├── index.html              # Modern, responsive single-page web application
+├── vercel.json             # Vercel deployment configuration, headers & routing
+├── package.json            # Node & Vercel project metadata and scripts
+├── .vercelignore           # Ignored files for lightweight deployment
+├── api/
+│   ├── health.js           # Serverless edge health endpoint (/api/health)
+│   └── webhook.js          # Serverless edge ingestion endpoint (/api/webhook)
 ├── assets/
 │   ├── css/
-│   │   └── styles.css      # Custom animations, syntax tokens, and glassmorphism styling
+│   │   └── styles.css      # Custom animations, syntax tokens, and styling
 │   └── js/
-│       └── main.js         # Canvas packet engine, conflict simulator, telemetry & Wasm transforms
-└── README.md               # Technical overview & developer documentation
+│       └── main.js         # Canvas packet engine, conflict simulator & Wasm transforms
+├── server.js               # Standalone local HTTP server with API routing
+└── README.md               # Technical overview & deployment guide
 ```

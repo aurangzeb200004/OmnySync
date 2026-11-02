@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -14,8 +14,42 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
+// Express-like response wrapper for serverless functions
+function wrapResponse(res) {
+  res.status = function(code) {
+    res.statusCode = code;
+    return res;
+  };
+  res.json = function(payload) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify(payload));
+    return res;
+  };
+  return res;
+}
+
 const server = http.createServer((req, res) => {
+  wrapResponse(res);
   const urlPath = req.url.split('?')[0];
+
+  // Route API Serverless Endpoints locally
+  if (urlPath === '/api/health') {
+    try {
+      return require('./api/health')(req, res);
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  if (urlPath === '/api/webhook' || urlPath === '/api/ingest') {
+    try {
+      return require('./api/webhook')(req, res);
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  // Static File Serving
   const relativePath = urlPath === '/' ? 'index.html' : urlPath.replace(/^\//, '');
   const filePath = path.join(__dirname, relativePath);
 
@@ -55,5 +89,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`OmniSync Engine server running at http://localhost:${PORT}`);
+  console.log(`OmniSync Engine running at http://localhost:${PORT}`);
 });

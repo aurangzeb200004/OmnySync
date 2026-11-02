@@ -1,0 +1,23 @@
+{
+  "name": "omnisync-engine",
+  "version": "2.8.0",
+  "private": true,
+  "description": "Universal Real-Time Data & Tool Orchestration Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Static assets ready for Vercel deployment'"
+  },
+  "keywords": [
+    "omnisync",
+    "data-orchestration",
+    "crdt",
+    "real-time",
+    "etl",
+    "wasm",
+    "telemetry"
+  ],
+  "author": "Muhammad Aurangzeb",
+  "license": "MIT"
+}
