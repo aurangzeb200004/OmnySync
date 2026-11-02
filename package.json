@@ -3,11 +3,9 @@
   "version": "2.8.0",
   "private": true,
   "description": "Universal Real-Time Data & Tool Orchestration Engine",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "build": "echo 'Static assets ready for Vercel deployment'"
+    "dev": "node server.js"
   },
   "keywords": [
     "omnisync",

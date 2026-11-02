@@ -22,3 +22,4 @@ module.exports = (req, res) => {
     message: 'Payload ingested into OmniSync Edge Gateway with zero data loss.'
   });
 };
+
